@@ -1,0 +1,24 @@
+{
+  "name": "modern-unix-and-c",
+  "version": "0.2.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "modern-unix-c": "./bin/modern-unix-c.mjs"
+  },
+  "scripts": {
+    "dev": "node bin/modern-unix-c.mjs",
+    "start": "node bin/modern-unix-c.mjs",
+    "lesson": "node bin/modern-unix-c.mjs lesson",
+    "search": "node bin/modern-unix-c.mjs search",
+    "progress": "node bin/modern-unix-c.mjs progress",
+    "test": "node --test",
+    "lint": "node --check bin/modern-unix-c.mjs && node --check lib/course.mjs && node --check lib/progress.mjs && node --check lib/render.mjs && node --check lib/exercises.mjs && node --check lib/workspace.mjs && node --check lib/typing.mjs && node --check lib/animation.mjs && node --check lib/runner.mjs && node --check lib/checker.mjs && node --check lib/hints.mjs && node --check lib/editor.mjs && node --check scripts/format.mjs",
+    "format": "node scripts/format.mjs",
+    "format:check": "node scripts/format.mjs --check",
+    "validate": "npm run format:check && npm run lint && npm run test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
