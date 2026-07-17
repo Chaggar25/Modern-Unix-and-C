@@ -1,118 +1,55 @@
 # Modern Unix and C
 
-A beginner-friendly **terminal-based, hands-on** course app for learning Unix/Linux concepts and modern C together. The main experience is not multiple-choice quizzes: learners type commands, edit C files, predict behavior, run programs, debug failures, and verify their work inside a safe lesson workspace.
+A beginner-friendly **terminal-based** course app for learning Unix/Linux concepts and modern C together. The goal is to keep version 1 small, dependable, and easy to run in the same environment where the learner practices shell commands and compiles C.
 
 ## Why terminal-first?
 
-The learner is studying Unix, C, standard streams, files, compilers, and process behavior. A terminal-first app keeps practice in the same environment where those concepts actually live. Version 1 has no runtime npm dependencies, so restricted networks can still run it.
+The previous web direction required Next.js, React, browser tooling, and many npm packages. That made installation fragile in restricted networks. This pivot keeps the product idea but moves the experience into a dependency-free Node CLI so learners can start with:
 
 ```bash
 npm install
 npm run dev
 ```
 
-## Core learning loop
+No registry packages are required for the current version.
 
-Hands-on labs follow this rhythm:
+## What the app does
 
-1. **WATCH** an ASCII animation.
-2. **FOLLOW ALONG** by typing a command or C statement.
-3. **TRY WITH GUIDANCE** by completing a starter file.
-4. **DO IT YOURSELF** from requirements.
-5. **DEBUG** broken code or an incorrect command.
-6. **EXPLAIN** by predicting output.
-7. **VERIFY** with automated checks.
-8. **REVIEW** with flashcards and mistake tracking.
-
-## Implemented vertical slice
-
-The complete working lab is:
-
-```bash
-npm run dev -- lab stdin
-```
-
-It includes:
-
-- an animated stdin/stdout explanation;
-- guided shell typing for a pipe command;
-- guided C typing for `while ((c = getc(stdin)) != EOF)`;
-- a seeded workspace at `~/.modern-unix-c/workspaces/stdin-stdout-eof-lab/`;
-- strict C compilation;
-- captured compiler stdout/stderr and exit status;
-- captured program stdout/stderr and exit status;
-- sandboxed command execution;
-- an editable `upper.c` exercise;
-- automated behavior tests;
-- layered hints;
-- debugging prompts for `char c` and undeclared `err_sys()`;
-- flashcards;
-- saved progress, attempts, mastered commands, and review concepts.
-
-## Practice modes
-
-The dashboard lists:
-
-- Guided Lessons
-- Command Practice
-- C Typing Practice
-- Coding Challenges
-- Debugging Lab
-- Output Prediction
-- Flashcards
-- Projects
-- Review Mistakes
+- Shows a presentable ANSI terminal dashboard.
+- Lists course modules and projects.
+- Opens beginner-friendly lessons by id or title.
+- Searches lesson titles, tags, and takeaways.
+- Marks lessons complete.
+- Toggles bookmarks.
+- Saves progress locally in the user's home directory.
+- Includes the guided `getc` / `putc` / `err_sys()` warning lesson.
+- Uses only built-in Node.js modules.
 
 ## Commands
 
 - `npm run dev` or `npm start` — open the dashboard.
-- `npm run dev -- modes` — list practice modes.
-- `npm run dev -- lab stdin` — open the stdin/stdout/EOF lab.
-- `npm run dev -- lab stdin reset` — reset the lesson workspace.
-- `npm run dev -- lab stdin animate` — play the ASCII animation frames.
-- `npm run dev -- lab stdin animate --static` — show reduced-motion fallback.
-- `npm run dev -- lab stdin type command "printf 'abc\\n' | ./copy"` — check guided shell typing.
-- `npm run dev -- lab stdin type code "while((c=getc(stdin))!=EOF)"` — check whitespace-tolerant C typing.
-- `npm run dev -- lab stdin compile copy.c` — compile with strict warnings.
-- `npm run dev -- lab stdin run copy abc` — run a compiled program with stdin.
-- `npm run dev -- lab stdin command "printf 'abc\\n' | ./copy"` — run a sandboxed command.
-- `npm run dev -- lab stdin test upper` — run automated tests for `upper.c`.
-- `npm run dev -- lab stdin solve upper` — apply the guided uppercase solution for the vertical slice.
-- `npm run dev -- lab stdin hint upper 0` — request a layered hint.
-- `npm run dev -- lab stdin flashcards` — review generated flashcards.
-- `npm run dev -- edit stdin upper.c "..."` — replace a workspace file from the CLI.
-- `npm run dev -- external-editor stdin upper.c` — open a workspace file in `$EDITOR`.
-- `npm run dev -- review-mistakes` — show concepts needing review.
+- `npm run dev -- lesson 0.1` — read a lesson.
+- `npm run dev -- search descriptors` — search lessons.
+- `npm run dev -- complete 0.1` — mark a lesson complete.
+- `npm run dev -- bookmark guided` — toggle a bookmark.
+- `npm run progress` — show saved progress.
 - `npm test` — run built-in Node tests.
+- `npm run lint` — run syntax checks with `node --check`.
+- `npm run format` — normalize simple formatting rules.
+- `npm run format:check` — verify formatting.
 - `npm run validate` — run format check, syntax checks, and tests.
-
-## Safety restrictions
-
-Beginner shell commands run inside the lesson workspace. The safe runner:
-
-- rejects empty commands;
-- allows only a small command set;
-- rejects broad `rm -rf` patterns;
-- rejects absolute paths and `..` path traversal;
-- rejects shell metacharacters outside the supported pipe flow;
-- displays the command before execution;
-- captures stdout, stderr, and exit status separately.
 
 ## Project structure
 
 - `bin/modern-unix-c.mjs` — CLI entry point and command routing.
-- `lib/exercises.mjs` — hands-on lab and exercise definitions.
-- `lib/workspace.mjs` — workspace manager.
-- `lib/runner.mjs` — safe command, compiler, and process runners.
-- `lib/checker.mjs` — automated checks and layered feedback records.
-- `lib/typing.mjs` — guided typing comparison.
-- `lib/animation.mjs` — reusable ASCII animation engine.
-- `lib/hints.mjs` — hint progression, attempts, and mistake review.
-- `lib/editor.mjs` — file replacement and external editor integration.
-- `lib/progress.mjs` — versioned local progress.
-- `test/*.mjs` — no-dependency Node tests.
+- `lib/course.mjs` — course modules, lessons, search helpers, and guided lesson content.
+- `lib/progress.mjs` — local JSON progress loading, saving, completion, and bookmarks.
+- `lib/render.mjs` — ANSI terminal rendering helpers.
+- `scripts/format.mjs` — no-dependency formatting gate.
+- `test/course.test.mjs` — Node test suite.
+- `docs` — requirements, curriculum, architecture, and content style guidance.
 
-## Progress storage
+## How progress is stored
 
 Progress is stored as JSON at:
 
@@ -120,11 +57,27 @@ Progress is stored as JSON at:
 ~/.modern-unix-c/progress.json
 ```
 
-The schema remains `schemaVersion: 1` and is backward-compatible with earlier `completedLessons` and `bookmarkedLessons` data. New fields track exercise attempts, commands mastered, exercises completed, and concepts needing review.
+The schema is versioned with `schemaVersion: 1`. If the file is missing or malformed, the app falls back to empty progress instead of crashing.
 
-## What remains
+## Adding a module or lesson
 
-- A true full-screen multiline editor; current support is file replacement plus `$EDITOR` integration.
-- More labs for filesystem navigation, permissions, processes, and later POSIX APIs.
-- Interactive prompts that pause for learner input inside a single session; current commands are scriptable and testable.
-- Optional timed fluency mode for already-mastered commands.
+Edit `lib/course.mjs`. Keep content original, beginner-friendly, and careful about the difference between ISO C, POSIX, Linux-specific behavior, and shell behavior. Then run:
+
+```bash
+npm run validate
+```
+
+## Known limitations
+
+- Version 1 is intentionally minimal and terminal-only.
+- It currently includes three core modules instead of every future advanced module in executable CLI data.
+- Quizzes are represented as lesson takeaways and practice prompts rather than an interactive quiz engine.
+- The terminal UI is deliberately simple: ANSI headings, badges, lists, and local progress.
+
+## Roadmap
+
+- Add interactive multiple-choice quizzes in the terminal.
+- Expand the CLI data to all 13 planned modules.
+- Add lesson files in Markdown for easier editing.
+- Add exportable practice C files.
+- Add a `reset` command and richer progress summaries.

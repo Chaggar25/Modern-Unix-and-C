@@ -4,7 +4,7 @@ import { join } from "node:path";
 import { tmpdir } from "node:os";
 import test from "node:test";
 import { allLessons, findLesson, modules, searchLessons } from "../lib/course.mjs";
-import { completionPercent, defaultProgress, loadProgress, markComplete, saveProgress, toggleBookmark } from "../lib/progress.mjs";
+import { completionPercent, loadProgress, markComplete, saveProgress, toggleBookmark } from "../lib/progress.mjs";
 
 test("course includes the terminal-first starting roadmap", () => {
   assert.equal(modules.length, 3);
@@ -25,5 +25,5 @@ test("progress survives save/load and corrupt files recover", () => {
   assert.deepEqual(loadProgress(path).completedLessons, ["0.1"]);
   assert.equal(completionPercent(loadProgress(path), 4), 25);
   rmSync(dir, { recursive: true, force: true });
-  assert.deepEqual(loadProgress(path), defaultProgress);
+  assert.deepEqual(loadProgress(path), { schemaVersion: 1, completedLessons: [], bookmarkedLessons: [] });
 });
